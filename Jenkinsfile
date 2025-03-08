@@ -25,13 +25,14 @@ pipeline {
         stage('Test Application') {
             steps {
                 sh 'sleep 5' // Wait for the app to start
-                sh 'python -m pytest tests/test_app.py -v'
+                // Запускаємо тести всередині контейнера з певними параметрами мережі
+                sh 'docker exec -i simple-python-app bash -c "cd /app && python -m pytest -v"'
             }
         }
     }
     
     post {
-        failure {
+        always {
             sh 'docker stop simple-python-app || true'
             sh 'docker rm simple-python-app || true'
         }
